@@ -1,0 +1,181 @@
+#include<iostream>
+
+using namespace std;
+#define max 9999
+class node {
+    public: 
+	int k;
+    node * left,* right;
+    bool leftTh,rightTh;
+};
+class TBT {
+    public: node * root;
+    TBT() {
+        root = new node();
+        root -> right = root -> left = root;
+        root -> leftTh = true;
+        root -> k = max;
+    }
+    void insert(int key);
+    void create();
+    void inorder_rec(node * temp);
+    void postorder_rec(node * temp);
+    void preorder_rec(node * temp);
+    node * inorder_successor(node * t);
+    void inorder_traversal();
+    node * preorder_successor(node * t);
+    void preorder_traversal();
+};
+void TBT::insert(int key) {
+    node * a = root;
+    for (;;) {
+        if (a -> k < key) {
+            if (a -> rightTh)
+                break;
+            a = a -> right;
+        } else if (a -> k > key) {
+            if (a -> leftTh)
+                break;
+            a = a -> left;
+        } else {
+            return;
+        }
+    }
+    node * temp = new node();
+    temp -> k = key;
+    temp -> rightTh = temp -> leftTh = true;
+    if (a -> k < key) {
+        temp -> right = a -> right;
+        temp -> left = a;
+        a -> right = temp;
+        a -> rightTh = false;
+    } else {
+        temp -> right = a;
+        temp -> left = a -> left;
+        a -> left = temp;
+        a -> leftTh = false;
+    }
+}
+void TBT::create() {
+    int num, c = 1;
+    do {
+        cout << "Enter Value: ";
+        cin >> num;
+        insert(num);
+        cout << "Do you want to continue(1/0): ";
+        cin >> c;
+    } while (c != 0);
+}
+void TBT::inorder_rec(node * temp) {
+    if (temp != NULL) {
+        if (temp -> leftTh == false)
+            inorder_rec(temp -> left);
+        cout << temp -> k << " ";
+        if (temp -> rightTh == false)
+            inorder_rec(temp -> right);
+    }
+}
+void TBT::postorder_rec(node * temp) {
+    if (temp != NULL) {
+        if (temp -> leftTh == false)
+            postorder_rec(temp -> left);
+        if (temp -> rightTh == false)
+            postorder_rec(temp -> right);
+        cout << temp -> k << " ";
+    }
+}
+void TBT::preorder_rec(node * temp) {
+    if (temp != NULL) {
+        cout << temp -> k << " ";
+        if (temp -> leftTh == false)
+            preorder_rec(temp -> left);
+        if (temp -> rightTh == false)
+            preorder_rec(temp -> right);
+    }
+}
+node * TBT::inorder_successor(node * t) {
+    if (t -> rightTh == 1)
+        t = t -> right;
+    else {
+        t = t -> right;
+        while (t -> leftTh == 0)
+            t = t -> left;
+    }
+    return t;
+}
+void TBT::inorder_traversal() {
+    node * t = root -> left;
+    while (t -> leftTh == 0)
+        t = t -> left;
+    while (t != root) {
+        cout << t -> k << " ";
+        t = inorder_successor(t);
+    }
+}
+node * TBT::preorder_successor(node * t) {
+    if (t -> leftTh == 0)
+        t = t -> left;
+    else if (t -> rightTh == 0)
+        t = t -> right;
+    else {
+        while (t -> rightTh == 1) {
+            t = t -> right;
+            if (t == root)
+                break;
+        }
+        t = t -> right;
+    }
+    return t;
+}
+void TBT::preorder_traversal() {
+    node * t = root -> left;
+    cout << t -> k << " ";
+    while (1) {
+        t = preorder_successor(t);
+        if (t == root)
+            break;
+        cout << t -> k << " ";
+    }
+}
+int main() {
+    TBT t;
+    int ch;
+    do {
+        cout << "\n1.Create\n2.Inorder Recursive Traversal\n3.Preorder Recursive Traversal\n4.Postorder Recursive Traversal\n5.Inorder Non Recursive Traversal\n6.Preorder Non Recursive Traversal\n7.Exit\nEnter Choice: ";
+        cin >> ch;
+        switch (ch) {
+        case 1: {
+            t.create();
+            break;
+        }
+        case 2: {
+            cout << "Inorder Recursive Traversal" << endl;
+            t.inorder_rec(t.root -> left);
+            break;
+        }
+        case 3: {
+            cout << "Preorder Recursive Traversal "<<endl;
+            t.preorder_rec(t.root -> left);
+            break;
+        }
+        case 4: {
+            cout << "Postorder Recursive Traversal "<<endl;
+            t.postorder_rec(t.root -> left);
+            break;
+        }
+        case 5: {
+            cout << "Inorder Non Recursive Traversal "<<endl;
+            t.inorder_traversal();
+            break;
+        }
+        case 6: {
+            cout << "Preorder Non Recursive Traversal "<<endl;
+            t.preorder_traversal();
+            break;
+        }
+        default: {
+            break;
+        }
+        }
+    } while (ch != 7);
+}

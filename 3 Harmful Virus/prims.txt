@@ -1,0 +1,77 @@
+#include<iostream>
+
+#include<bits/stdc++.h>
+
+using namespace std;
+#define v 20
+class Prims {
+    int a;
+    int graph[v][v];
+    public:
+        void create();
+	    void display();
+	    int min(int key[], bool set[]);
+	    void findPrim();
+	    void displayMST(int p[]);
+};
+void Prims::create() {
+    cout << "Enter number of vertices: ";
+    cin >> a;
+    cout << "Enter values for adjecency matrix" << endl;
+    for (int i = 0; i < a; i++) {
+        cout << "Row " << i + 1 << " = ";
+        for (int j = 0; j < a; j++) {
+            cin >> graph[i][j];
+        }
+    }
+}
+void Prims::display() {
+    cout << "\nGraph" << endl;
+    for (int i = 0; i < a; i++) {
+        for (int j = 0; j < a; j++) {
+            cout << graph[i][j];
+        }
+        cout << "" << endl;
+    }
+}
+int Prims::min(int key[], bool set[]) {
+    int min = 9999, index;
+    for (int i = 0; i < a; i++) {
+        if (set[i] == false && key[i] < min) {
+            min = key[i], index = i;
+        }
+    }
+    return index;
+}
+void Prims::findPrim() {
+    int p[a], key[a];
+    int k;
+    bool set[a];
+    for (int i = 0; i < a; i++) {
+        key[i] = 999, set[i] = false;
+    }
+    key[0] = 0;
+    p[0] = -1;
+    for (int i = 0; i < a - 1; i++) {
+        k = min(key, set);
+        set[k] = true;
+        for (int j = 0; j < a; j++) {
+            if (graph[k][j] && set[j] == false && graph[k][j] < key[j]) {
+                p[j] = k, key[j] = graph[k][j];
+            }
+        }
+    }
+    displayMST(p);
+}
+void Prims::displayMST(int p[]) {
+    cout << "\nEdge \tWeight\n";
+    for (int i = 1; i < a; i++) {
+        cout << p[i] << " - " << i << " \t" << graph[i][p[i]] << endl;
+    }
+}
+int main() {
+    Prims P;
+    P.create();
+    P.display();
+    P.findPrim();
+}

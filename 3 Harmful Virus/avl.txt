@@ -1,0 +1,288 @@
+#include<iostream>
+
+using namespace std;
+class node {
+    public: int value;
+    node * left;
+    node * right;
+}* root;
+class AVL {
+    public: int height(node * temp);
+    int diff(node * temp);
+    node * right_rotation(node * temp);
+    node * left_rotation(node * temp);
+    node * left_right_rotation(node * temp);
+    node * right_left_rotation(node * temp);
+    node * balance(node * temp);
+    node * insert(node * temp, int a);
+    void display(node * temp);
+    void non_rec_inorder(node * root);
+    void non_rec_preorder(node * root);
+    void non_rec_postorder(node * root);
+    void rec_inorder(node * root);
+    void rec_preorder(node * root);
+    void rec_postorder(node * root);
+    AVL() {
+        root = NULL;
+    }
+};
+class stack {
+    int top;
+    node * stk_node[20];
+    public:
+        stack() {
+            top = -1;
+        }
+    void push(node * Node);
+    node * pop();
+    int empty() {
+        if (top == -1)
+            return 1;
+        return 0;
+    }
+};
+int AVL::height(node * temp) {
+    int h = 0;
+    if (temp != NULL) {
+        int left_height = height(temp -> left);
+        int right_height = height(temp -> right);
+        int max_height = max(left_height, right_height);
+        h = max_height + 1;
+    }
+    return h;
+}
+int AVL::diff(node * temp) {
+    int left_height = height(temp -> left);
+    int right_height = height(temp -> right);
+    int balance_factor = left_height - right_height;
+    return balance_factor;
+}
+node * AVL::right_rotation(node * parent) {
+    node * temp;
+    temp = parent -> right;
+    parent -> right = temp -> left;
+    temp -> left = parent;
+    return temp;
+}
+node * AVL::left_rotation(node * parent) {
+    node * temp;
+    temp = parent -> left;
+    parent -> left = temp -> right;
+    temp -> right = parent;
+    return temp;
+}
+node * AVL::left_right_rotation(node * parent) {
+    node * temp;
+    temp = parent -> left;
+    parent -> left = right_rotation(temp);
+    return left_rotation(parent);
+}
+node * AVL::right_left_rotation(node * parent) {
+    node * temp;
+    temp = parent -> right;
+    parent -> right = left_rotation(temp);
+    return right_rotation(parent);
+}
+node * AVL::balance(node * temp) {
+    int balance_factor = diff(temp);
+    if (balance_factor > 1) {
+        if (diff(temp -> left) > 0)
+            temp = left_rotation(temp);
+        else
+            temp = left_right_rotation(temp);
+    } else if (balance_factor < -1) {
+        if (diff(temp -> right) > 0)
+            temp = right_left_rotation(temp);
+        else
+            temp = right_rotation(temp);
+    }
+    return temp;
+}
+node * AVL::insert(node * root, int data) {
+    if (root == NULL) {
+        root = new node;
+        root -> value = data;
+        root -> left = NULL;
+        root -> right = NULL;
+        return root;
+    } else {
+        if (data < root -> value) {
+            root -> left = insert(root -> left, data);
+            root = balance(root);
+        } else if (data > root -> value) {
+            root -> right = insert(root -> right, data);
+            root = balance(root);
+        } else
+            cout << " node element already exists\n";
+    }
+    return root;
+}
+void AVL::display(node * ptr) {
+    node * a[20];
+    int front = 0, rear = 0;
+    a[rear] = ptr;
+    while (front <= rear) {
+        ptr = a[front++];
+        if (ptr != NULL) {
+            cout << " " << ptr -> value << " ";
+            a[++rear] = ptr -> left;
+            a[++rear] = ptr -> right;
+        }
+    }
+}
+void stack::push(node * Node) {
+    stk_node[++top] = Node;
+}
+node * stack::pop() {
+    return stk_node[top--];
+}
+void AVL::non_rec_inorder(node * root) {
+    stack stk;
+    node * temp;
+    if (root == NULL)
+        cout << "\n ------Tree is empty-----";
+    else {
+        temp = root;
+        do {
+            while (temp != NULL) {
+                stk.push(temp);
+                temp = temp -> left;
+            }
+            if (!stk.empty()) {
+                temp = stk.pop();
+                cout << "\n" << temp -> value << " ";
+                temp = temp -> right;
+            } else
+                break;
+        } while (1);
+    }
+}
+void AVL::non_rec_preorder(node * a_root) {
+    stack stk;
+    node * temp = root;
+    stk.push(temp);
+    while (!stk.empty()) {
+        temp = stk.pop();
+        if (temp != NULL) {
+            cout << temp -> value << " ";
+            stk.push(temp -> right);
+            stk.push(temp -> left);
+        }
+    }
+}
+void AVL::non_rec_postorder(node * ptr) {
+    int a[50];
+    int top_prev;
+    node * b[50];
+    int top = 1;
+    b[++top] = NULL;
+    do {
+        while (ptr != NULL) {
+            b[++top] = ptr;
+            a[top] = 1;
+            if (ptr -> right != NULL) {
+                b[++top] = ptr -> right;
+                a[top] = -1;
+            }
+            ptr = ptr -> left;
+        }
+        top_prev = top;
+        ptr = b[top--];
+        while (a[top_prev] == 1) {
+            cout << ptr -> value << " ";
+            top_prev = top;
+            ptr = b[top--];
+        }
+    } while (ptr != NULL);
+}
+void AVL::rec_inorder(node * root) {
+    if (root == NULL) {
+        cout << "Tree is empty";
+    } else {
+        if (root -> left != NULL)
+            rec_inorder(root -> left);
+        cout << root -> value << " ";
+        if (root -> right != NULL)
+            rec_inorder(root -> right);
+    }
+}
+void AVL::rec_preorder(node * root) {
+    if (root == NULL) {
+        cout << "Tree is empty";
+    } else {
+        cout << root -> value << " ";
+        if (root -> left != NULL)
+            rec_preorder(root -> left);
+        if (root -> right != NULL)
+            rec_preorder(root -> right);
+    }
+}
+void AVL::rec_postorder(node * root) {
+    if (root == NULL) {
+        cout << "Tree is empty";
+    } else {
+        if (root -> left != NULL)
+            rec_postorder(root -> left);
+        if (root -> right != NULL)
+            rec_postorder(root -> right);
+        cout << root -> value << " ";
+    }
+}
+int main() {
+    int ch, item;
+    AVL avl;
+    do {
+        cout << "\n\n1.Insert into AVL\n2.Display Tree\n3.Inorder recursive traversal\n4.Preorder recursive traversal\n5.Postorder recursive traversal\n6.Inorder non - recursive traversal\n7.Preorder non - recursive traversal\n8.Postorder non - recursive traversal\n9.Exit\nEnter Choice: ";
+        cin >> ch;
+        switch (ch) {
+        case 1: {
+            cout << "Enter the node value to be inserted: ";
+            cin >> item;
+            root = avl.insert(root, item);
+            break;
+        }
+        case 2: {
+            if (root == NULL) {
+                cout << "Tree is Empty" << endl;
+                continue;
+            }
+            cout << "Balanced AVL Tree:" << endl;
+            avl.display(root);
+            break;
+        }
+        case 3: {
+            cout << "\nInorder recursive traversal" << endl;
+            avl.rec_inorder(root);
+            break;
+        }
+        case 4: {
+            cout << "\nPreorder recursive traversal" << endl;
+            avl.rec_preorder(root);
+            break;
+        }
+        case 5: {
+            cout << "\nPostorder recursive traversal" << endl;
+            avl.rec_postorder(root);
+            break;
+        }
+        case 6: {
+            cout << "\nInorder non-recursive traversal" << endl;
+            avl.non_rec_inorder(root);
+            break;
+        }
+        case 7: {
+            cout << "\nPreorder non-recursive traversal" << endl;
+            avl.non_rec_preorder(root);
+            break;
+        }
+        case 8: {
+            cout << "\nPostorder non-recursive traversal" << endl;
+            avl.non_rec_postorder(root);
+            break;
+        }
+        default: {
+            break;
+        }
+        }
+    } while (ch != 9);
+}

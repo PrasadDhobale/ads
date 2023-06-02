@@ -1,0 +1,176 @@
+#include <iostream>
+
+#define max 20
+using namespace std;
+
+class Node {
+    public: 
+	int data;
+    Node * next;
+};
+
+int main() {
+
+    int hash_table[10], n, ele, ch;
+    bool endLoop = false;
+
+    do {
+        for (int i = 0; i < 10; i++) {
+            hash_table[i] = 0;
+        }
+
+        cout << "Enter your choice: \n1. Hashing without replacement without chaining \n2. Hashing with replacement without chaining"
+        "\n3. Hashing with replacement with chaining \n4. Hashing without replacement with chaining \n5. Exit" << endl;
+        cin >> ch;
+
+        switch (ch) {
+        case 1: {
+            cout << "Enter the number of elements you want to enter: ";
+            cin >> n;
+
+            int a[max], hashTable[10];
+            cout << "Enter the elements: \n";
+
+            for (int i = 0; i < 10; i++)
+                hashTable[i] = 0;
+
+            for (int i = 0; i < n; i++) {
+                cin >> a[i];
+                int k = a[i] % 10;
+                while (hashTable[k] != 0)
+                    k++;
+                hashTable[k] = a[i];
+            }
+
+            for (int i = 0; i < 10; i++)
+                cout << i << " : " << hashTable[i] << endl;
+
+            break;
+        }
+
+        case 2: {
+            cout << "Enter the number of elements you want to enter: ";
+            cin >> n;
+
+            int a[max], hashTable[10];
+            cout << "Enter the elements: \n";
+
+            for (int i = 0; i < 10; i++)
+                hashTable[i] = 0;
+
+            for (int i = 0; i < n; i++) {
+                cin >> a[i];
+                int k, m;
+                k = m = a[i] % 10;
+                while (hashTable[k] != 0) {
+                    k++;
+                }
+                hashTable[k] = hashTable[m];
+                hashTable[m] = a[i];
+            }
+
+            for (int i = 0; i < 10; i++)
+                cout << i << " : " << hashTable[i] << endl;
+
+            break;
+        }
+
+        case 3: {
+            cout << "Enter the number of elements you want to enter: ";
+            cin >> n;
+
+            Node * chain[10];
+
+            for (int i = 0; i < 10; i++) {
+                chain[i] = NULL;
+            }
+
+            for (int i = 1; i <= n; i++) {
+                cout << "Enter element " << i << ": ";
+                cin >> ele;
+
+                Node * newNode = new Node();
+                newNode -> data = ele;
+                newNode -> next = NULL;
+
+                int index = ele % 10;
+                if (chain[index] == NULL) {
+                    chain[index] = newNode;
+                } else {
+                    Node * curr = chain[index];
+                    while (curr -> next != NULL) {
+                        curr = curr -> next;
+                    }
+                    curr -> next = newNode;
+                }
+            }
+
+            cout << "Hashing with replacement with chaining:" << endl;
+            for (int i = 0; i < 10; i++) {
+                cout << i << ": ";
+                Node * curr = chain[i];
+                while (curr != NULL) {
+                    cout << curr -> data << " ";
+                    curr = curr -> next;
+                }
+                cout << endl;
+            }
+            break;
+        }
+
+        case 4: {
+            cout << "Enter the number of elements you want to enter: ";
+            cin >> n;
+
+            Node * chain[10];
+
+            for (int i = 0; i < 10; i++) {
+                chain[i] = NULL;
+            }
+
+            for (int i = 1; i <= n; i++) {
+                cout << "Enter element " << i << ": ";
+                cin >> ele;
+
+                int index = ele % 10;
+
+                Node * newNode = new Node();
+                newNode -> data = ele;
+                newNode -> next = NULL;
+
+                if (chain[index] == NULL) {
+                    chain[index] = newNode;
+                } else {
+                    Node * curr = chain[index];
+                    while (curr -> next != NULL) {
+                        curr = curr -> next;
+                    }
+                    curr -> next = newNode;
+                }
+            }
+
+            cout << "Hashing without replacement with chaining:" << endl;
+            for (int i = 0; i < 10; i++) {
+                cout << i << ": ";
+                Node * curr = chain[i];
+                while (curr != NULL) {
+                    cout << curr -> data << " ";
+                    curr = curr -> next;
+                }
+                cout << endl;
+            }
+            break;
+        }
+
+        case 5:
+            endLoop = true;
+            break;
+
+        default:
+            cout << "Invalid choice!" << endl;
+            break;
+        }
+    } while (!endLoop);
+
+    return 0;
+}

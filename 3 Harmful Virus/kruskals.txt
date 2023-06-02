@@ -1,0 +1,79 @@
+#include<iostream>
+ //#include<bits/stdc++.h>
+#include<algorithm>
+
+using namespace std;
+class edge {
+    public: 
+	int start,    end,    weight;
+};
+class Kruksal {
+    public: int v,e;
+    edge * edges;
+    Kruksal(int a, int b) {
+        v = a;
+        e = b;
+        edges = new edge[e];
+    }
+    void add(int start, int end, int weight, int index);
+    static bool compare(const edge & a,
+        const edge & b) {
+        return a.weight < b.weight;
+    }
+    int find(int * p, int i);
+    void Union(int * p, int a, int b);
+    void kruksalMST();
+};
+void Kruksal::add(int start, int end, int weight, int index) {
+    edges[index].start = start;
+    edges[index].end = end;
+    edges[index].weight = weight;
+}
+int Kruksal::find(int * p, int i) {
+    if (p[i] == -1) {
+        return i;
+    }
+    return find(p, p[i]);
+}
+void Kruksal::Union(int * p, int a, int b) {
+    p[a] = b;
+}
+void Kruksal::kruksalMST() {
+    edge * r = new edge[v - 1];
+    int a = 0, b = 0;
+    sort(edges, edges + e, compare);
+    int * p = new int[v];
+    for (int k = 0; k < v; k++) {
+        p[k] = -1;
+    }
+    while (b < v - 1 && a < e) {
+        edge next = edges[a++];
+        int x = find(p, next.start);
+        int y = find(p, next.end);
+        if (x != y) {
+            r[b++] = next;
+            Union(p, x, y);
+        }
+    }
+    cout << "\nEdges are: " << endl;
+    for (int i = 0; i < v - 1; ++i) {
+        cout << r[i].start << " -- " << r[i].end << " Weight: " << r[i].weight << endl;
+    }
+    delete[] r;
+    delete[] p;
+}
+int main() {
+    int V, E;
+    cout << "Enter number of vertces: ";
+    cin >> V;
+    cout << "Enter number of edges: ";
+    cin >> E;
+    Kruksal k(V, E);
+    cout << "Enter start, end and weight of each edge:" << endl;
+    for (int i = 0; i < E; ++i) {
+        int start, end, weight;
+        cin >> start >> end >> weight;
+        k.add(start, end, weight, i);
+    }
+    k.kruksalMST();
+}
